@@ -6,7 +6,7 @@
 
 package demos.mutable.stack
 
-import dataStructures.mutable.Stack.{ArrayStack, LinkedStack, Stack}
+import dataStructures.mutable.stack.{ArrayStack, LinkedStack, Stack}
 
 object Demos extends App {
   val s1: Stack[Int] = ArrayStack(10)

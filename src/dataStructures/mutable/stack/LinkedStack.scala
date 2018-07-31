@@ -4,7 +4,7 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.mutable.Stack
+package dataStructures.mutable.stack
 
 object LinkedStack {
 

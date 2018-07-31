@@ -4,6 +4,6 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.mutable.Stack
+package dataStructures.mutable.searchTree
 
-case class EmptyStackException(msg: String) extends Exception
+case class EmptySearchTreeException(msg: String) extends Exception
