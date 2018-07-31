@@ -1,8 +1,8 @@
-/******************************************************************************
- * Data Structures in Scala
- *
- * Pepe Gallardo, 2018
- *****************************************************************************/
+/** ****************************************************************************
+  * Data Structures in Scala
+  *
+  * Pepe Gallardo, 2018
+  * ****************************************************************************/
 
 package dataStructures.immutable.searchTree
 
@@ -123,29 +123,33 @@ sealed trait BST[+A] extends SearchTree[A] {
     case Node(x, lt, rt) =>
       lt.foldPostOrder(rt.foldPostOrder(f(x, z))(f))(f)
   }
+
   // Alternative implementation of folds using a generic traversal
-  private def traversal[B](z:B)(f : (A, B) => B)(order : (B => B, B => B, B => B) => B => B): B = {
-    def aux(bst : BST[A]) : B => B = bst match {
+  private def traversal[B](z: B)(f: (A, B) => B)(order: (B => B, B => B, B => B) => B => B): B = {
+    def aux(bst: BST[A]): B => B = bst match {
       case Empty =>
         identity
       case Node(x, lt, rt) =>
-        order(f(x,_), aux(lt), aux(rt))
+        order(f(x, _), aux(lt), aux(rt))
     }
+
     aux(this)(z)
   }
 
-  def foldPreOrder2[B](z : B)(f : (A, B) => B) : B =
+  def foldPreOrder2[B](z: B)(f: (A, B) => B): B =
     traversal(z)(f)((xf, lf, rf) => xf compose lf compose rf)
-  def foldInOrder2[B](z : B)(f : (A, B) => B) : B =
+
+  def foldInOrder2[B](z: B)(f: (A, B) => B): B =
     traversal(z)(f)((xf, lf, rf) => lf compose xf compose rf)
-  def foldPostOrder2[B](z : B)(f : (A, B) => B) : B =
+
+  def foldPostOrder2[B](z: B)(f: (A, B) => B): B =
     traversal(z)(f)((xf, lf, rf) => lf compose rf compose xf)
 }
 
 private case object Empty extends BST[Nothing]
 
-private case class Node[A](x : A, lt : BST[A], rt : BST[A]) extends BST[A] {
-  def split : (A, BST[A]) = this match {
+private case class Node[A](x: A, lt: BST[A], rt: BST[A]) extends BST[A] {
+  def split: (A, BST[A]) = this match {
     case Node(x, Empty, rt) =>
       (x, rt)
     case Node(x, lt@Node(_, _, _), rt) =>
@@ -155,24 +159,24 @@ private case class Node[A](x : A, lt : BST[A], rt : BST[A]) extends BST[A] {
 }
 
 object BST {
-  def empty[A] : BST[A] =
+  def empty[A]: BST[A] =
     Empty
 
   def apply[A](): BST[A] =
     Empty
 
-  def apply[A](xs : A*)(implicit ord : Ordering[A]) : BST[A] =
+  def apply[A](xs: A*)(implicit ord: Ordering[A]): BST[A] =
     xs.foldLeft(empty[A])(_.insert(_))
 
-  private def join[A](lt : BST[A], rt : BST[A]) : BST[A] =
+  private def join[A](lt: BST[A], rt: BST[A]): BST[A] =
     (lt, rt) match {
       case (Empty, _) =>
         rt
       case (_, Empty) =>
         lt
       case (_, rt@Node(_, _, _)) =>
-        val (x, splittedRt) = rt.split
-        Node(x, lt, splittedRt)
+        val (x, splitRt) = rt.split
+        Node(x, lt, splitRt)
     }
 }
 

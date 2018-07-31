@@ -1,16 +1,16 @@
-/******************************************************************************
- * Data Structures in Scala
- *
- * Pepe Gallardo, 2018
- *****************************************************************************/
+/** ****************************************************************************
+  * Data Structures in Scala
+  *
+  * Pepe Gallardo, 2018
+  * ****************************************************************************/
 
 package demos.immutable.searchTree
 
 import dataStructures.immutable.searchTree.{BST, SearchTree}
 
-object Test extends App {
-  var t1 : SearchTree[Int] = BST[Int]()
-  for(x <- List(10,5,15,1,7,20))
+object Demos extends App {
+  var t1: SearchTree[Int] = BST[Int]()
+  for (x <- List(10, 5, 15, 1, 7, 20))
     t1 = t1.insert(x)
 
   println(t1)
@@ -18,24 +18,24 @@ object Test extends App {
   val t2 = t1.delete(10)
   println(t2)
 
-  val xs = t1.foldInOrder(List[Int]())(_::_)
-  val ys = t1.foldPreOrder(List[Int]())(_::_)
-  val zs = t1.foldPostOrder(List[Int]())(_::_)
+  val xs = t1.foldInOrder(List[Int]())(_ :: _)
+  val ys = t1.foldPreOrder(List[Int]())(_ :: _)
+  val zs = t1.foldPostOrder(List[Int]())(_ :: _)
 
   println(xs)
   println(ys)
   println(zs)
 
 
-  def sum[A](t : SearchTree[A])(implicit num : Numeric[A]) : A =
+  def sum[A](t: SearchTree[A])(implicit num: Numeric[A]): A =
     t.foldInOrder(num.zero)(num.plus)
 
-  def product[A](t : SearchTree[A])(implicit num : Numeric[A]) : A =
+  def product[A](t: SearchTree[A])(implicit num: Numeric[A]): A =
     t.foldInOrder(num.one)(num.times)
 
   println(sum(t1), product(t1))
 
-  val t3 = BST(10,5,15,1,7,20)
+  val t3 = BST(10, 5, 15, 1, 7, 20)
   println(t3)
 
   println(t3.deleteMaxim)
