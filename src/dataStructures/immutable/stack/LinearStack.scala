@@ -6,6 +6,8 @@
 
 package dataStructures.immutable.stack
 
+import org.scalacheck.{Arbitrary, Gen}
+
 sealed trait LinearStack[+A] extends Stack[A] {
   override def isEmpty: Boolean = this match {
     case Empty =>
@@ -52,4 +54,9 @@ object LinearStack {
 
   def apply[A](): LinearStack[A] =
     Empty
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[LinearStack[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(LinearStack.empty[A])((x, s) => s.push(x))
+  }
 }
