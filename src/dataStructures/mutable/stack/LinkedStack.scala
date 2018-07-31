@@ -7,7 +7,6 @@
 package dataStructures.mutable.stack
 
 object LinkedStack {
-
   private case class Node[E](elem: E, next: Node[E]) // this is a static class
 
   def apply[A](): LinkedStack[A] =

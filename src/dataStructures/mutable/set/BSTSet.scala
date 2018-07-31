@@ -39,7 +39,7 @@ class BSTSet[A](private val tree: BST[A])(implicit ord: Ordering[A]) extends Set
   override def iterator: Iterator[A] =
     tree.inOrderIt
 
-  override def copy: Set[A] =
+  override def copy: BSTSet[A] =
     new BSTSet(tree.copy)
 
   override def toString(): String = {
