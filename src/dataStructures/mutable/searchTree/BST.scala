@@ -7,6 +7,7 @@
 package dataStructures.mutable.searchTree
 
 object BST {
+
   private case class Node[E](var elem: E, var lt: Node[E], var rt: Node[E])
 
   def empty[A]: BST[A] =
@@ -72,7 +73,7 @@ object BST {
       Node(node.elem, copyAux(node.lt), copyAux(node.rt))
 }
 
-class BST[A] private (private var root: BST.Node[A], private var sz: Int) extends SearchTree[A] {
+class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends SearchTree[A] {
   def this() {
     this(null, 0)
   }

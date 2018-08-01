@@ -9,6 +9,7 @@ package dataStructures.mutable.dictionary
 import dataStructures.mutable.searchTree.BST
 
 object BSTDictionary {
+
   protected case class Rel[K, V](key: K, value: V)
 
   implicit def ordKey2Rel[K, V](implicit ord: Ordering[K]) = new Ordering[Rel[K, V]] {
@@ -26,7 +27,7 @@ object BSTDictionary {
     new BSTDictionary()
 }
 
-class BSTDictionary[K,V] private (tree : BST[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K,V] {
+class BSTDictionary[K, V] private(tree: BST[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
     this(BST())
   }
@@ -57,7 +58,7 @@ class BSTDictionary[K,V] private (tree : BST[BSTDictionary.Rel[K, V]])(implicit 
       true
   }
 
-  private class WithTreeIterable[T](extract : BSTDictionary.Rel[K,V] => T) extends Iterable[T] {
+  private class WithTreeIterable[T](extract: BSTDictionary.Rel[K, V] => T) extends Iterable[T] {
     override def iterator: Iterator[T] = new Iterator[T] {
       private val treeIt = tree.inOrder.iterator
 
@@ -76,7 +77,7 @@ class BSTDictionary[K,V] private (tree : BST[BSTDictionary.Rel[K, V]])(implicit 
     new WithTreeIterable[V](rel => rel.value)
 
   override def keysValues: Iterable[(K, V)] =
-    new WithTreeIterable[(K,V)](rel => (rel.key, rel.value))
+    new WithTreeIterable[(K, V)](rel => (rel.key, rel.value))
 
   override def toString: String = {
     val sb = new StringBuilder(this.getClass.getSimpleName)

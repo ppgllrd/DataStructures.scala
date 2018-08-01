@@ -16,7 +16,7 @@ object BSTSet {
     new BSTSet[A]()
 }
 
-class BSTSet[A] private (private val tree: BST[A])(implicit ord: Ordering[A]) extends Set[A] {
+class BSTSet[A] private(private val tree: BST[A])(implicit ord: Ordering[A]) extends Set[A] {
   def this()(implicit ord: Ordering[A]) {
     this(BST())
   }

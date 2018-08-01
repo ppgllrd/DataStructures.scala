@@ -8,7 +8,7 @@ package dataStructures.immutable.stack
 
 import org.scalacheck.{Arbitrary, Gen}
 
-case class StackOnList[+A] private (private val xs: List[A]) extends Stack[A] {
+case class StackOnList[+A] private(private val xs: List[A]) extends Stack[A] {
   def this() {
     this(List())
   }

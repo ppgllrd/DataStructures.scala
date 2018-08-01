@@ -9,6 +9,7 @@ package dataStructures.immutable.dictionary
 import dataStructures.immutable.searchTree.{BST, SearchTree}
 
 object BSTDictionary {
+
   protected case class Rel[K, +V](key: K, value: V)
 
   implicit def ordKey2Rel[K, V](implicit ord: Ordering[K]) = new Ordering[Rel[K, V]] {
@@ -26,7 +27,7 @@ object BSTDictionary {
     new BSTDictionary()
 }
 
-case class BSTDictionary[K, +V] private (private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
+case class BSTDictionary[K, +V] private(private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
     this(BST())
   }
