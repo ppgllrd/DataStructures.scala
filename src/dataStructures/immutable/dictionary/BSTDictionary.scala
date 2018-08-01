@@ -37,8 +37,6 @@ case class BSTDictionary[K, +V] private (private val tree: SearchTree[BSTDiction
   override def size: Int =
     tree.size
 
-  import BSTDictionary.ordKey2Rel
-
   override def insert[VS >: V](key: K, value: VS): BSTDictionary[K, VS] =
     BSTDictionary(tree.insert(BSTDictionary.Rel(key, value)))
 

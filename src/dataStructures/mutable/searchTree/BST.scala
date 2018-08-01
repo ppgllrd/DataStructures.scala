@@ -21,7 +21,7 @@ object BST {
     else {
       val cmp = ord.compare(e, node.elem)
       if (cmp == 0)
-        Some(e)
+        Some(node.elem)
       else if (cmp < 0)
         searchAux(node.lt, e)
       else
