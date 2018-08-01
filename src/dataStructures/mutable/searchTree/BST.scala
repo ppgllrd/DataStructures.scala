@@ -72,7 +72,7 @@ object BST {
       Node(node.elem, copyAux(node.lt), copyAux(node.rt))
 }
 
-class BST[A](private var root: BST.Node[A], private var sz: Int) extends SearchTree[A] {
+class BST[A] private (private var root: BST.Node[A], private var sz: Int) extends SearchTree[A] {
   def this() {
     this(null, 0)
   }

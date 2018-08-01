@@ -26,7 +26,7 @@ object BSTDictionary {
     new BSTDictionary()
 }
 
-case class BSTDictionary[K, +V](private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
+case class BSTDictionary[K, +V] private (private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
     this(BST())
   }
