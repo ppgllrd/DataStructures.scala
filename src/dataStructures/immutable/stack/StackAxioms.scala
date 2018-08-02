@@ -6,35 +6,75 @@
 
 package dataStructures.immutable.stack
 
+import dataStructures.util.TestData
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Properties}
 
-class StackAxioms[A, S[_] <: Stack[_]](empty: S[A])(implicit val a: Arbitrary[A], implicit val s: Arbitrary[S[A]]) extends Properties("StackAxioms") {
-  property("top push") = forAll { (s: S[A], x: A) =>
-    s.push(x).top == x
-  }
+trait Test {
+  type Elem // Base type
 
-  property("pop push") = forAll { (s: S[A], x: A) =>
-    s.push(x).pop == s
-  }
+  type Stack[A] <: dataStructures.immutable.stack.Stack[A] // Stack implementation
+
+  def empty: Stack[Elem] // Returns an empty stack
+
+  implicit val arbitraryElem: Arbitrary[Elem]
+
+  implicit val arbitraryStack: Arbitrary[Stack[Elem]]
+}
+
+class StackAxioms(test: Test) extends Properties("StackAxioms") {
+
+  import test._
+
+  private type Stack[A] = test.Stack[A]
 
   property("isEmpty empty") =
     empty.isEmpty
 
-  property("not isEmpty push") = forAll { (s: S[A], x: A) =>
+  property("not isEmpty push") = forAll { (s: Stack[Elem], x: Elem) =>
     !s.push(x).isEmpty
+  }
+
+  property("top push") = forAll { (s: Stack[Elem], x: Elem) =>
+    s.push(x).top == x
+  }
+
+  property("pop push") = forAll { (s: Stack[Elem], x: Elem) =>
+    s.push(x).pop == s
   }
 }
 
-import dataStructures.immutable.stack.LinearStack.arbitrary
+case class LinearStackTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
+  override type Elem = A
 
-object TestLinearStackInt extends StackAxioms[Int, LinearStack](LinearStack.empty)
+  override type Stack[A] = LinearStack[A]
 
-object TestLinearStackBoolean extends StackAxioms[Boolean, LinearStack](LinearStack.empty)
+  override def empty = LinearStack()
+
+  implicit val arbitraryStack = LinearStack.arbitrary
+}
 
 
-import dataStructures.immutable.stack.StackOnList.arbitrary
+object TestLinearStackInt extends StackAxioms(LinearStackTest[Int])
 
-object TestStackOnListInt extends StackAxioms[Int, StackOnList](StackOnList.empty)
+object TestLinearStackBool extends StackAxioms(LinearStackTest[Boolean])
 
-object TestStackOnListChar extends StackAxioms[Char, StackOnList](StackOnList.empty)
+object TestLinearStackTestData extends StackAxioms(LinearStackTest[TestData.Type])
+
+
+case class StackOnListTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
+  override type Elem = A
+
+  override type Stack[A] = StackOnList[A]
+
+  override def empty = StackOnList()
+
+  implicit val arbitraryStack = StackOnList.arbitrary
+}
+
+
+object TestStackOnListInt extends StackAxioms(StackOnListTest[Int])
+
+object TestStackOnListBool extends StackAxioms(StackOnListTest[Boolean])
+
+object TestStackOnListTestData extends StackAxioms(StackOnListTest[TestData.Type])

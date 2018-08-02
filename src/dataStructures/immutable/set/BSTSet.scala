@@ -7,6 +7,7 @@
 package dataStructures.immutable.set
 
 import dataStructures.immutable.searchTree.{BST, SearchTree}
+import org.scalacheck.{Arbitrary, Gen}
 
 object BSTSet {
   def empty[A]()(implicit ord: Ordering[A]): BSTSet[A] =
@@ -14,6 +15,11 @@ object BSTSet {
 
   def apply[A]()(implicit ord: Ordering[A]): BSTSet[A] =
     new BSTSet[A]()
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[BSTSet[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(BSTSet.empty[A])((x, s) => s.insert(x))
+  }
 }
 
 case class BSTSet[A] private(private val tree: SearchTree[A])(implicit ord: Ordering[A]) extends Set[A] {
@@ -38,6 +44,13 @@ case class BSTSet[A] private(private val tree: SearchTree[A])(implicit ord: Orde
 
   override def fold[B](z: B)(f: (A, B) => B): B =
     tree.foldInOrder(z)(f)
+
+  override def equals(o: scala.Any): Boolean = o match {
+    case that: Set[A] =>
+      this.size == that.size && this.difference(that).isEmpty
+    case _ =>
+      false
+  }
 
   override def toString: String =
     fold(List[A]())(_ :: _).mkString(this.getClass.getSimpleName + "(", ",", ")")
