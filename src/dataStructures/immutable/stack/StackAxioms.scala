@@ -65,11 +65,11 @@ object TestLinearStackTestData extends StackAxioms(LinearStackTest[TestData.Type
 case class StackOnListTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
   override type Elem = A
 
-  override type Stack[A] = StackOnList[A]
+  override type Stack[A] = ListStack[A]
 
-  override def empty = StackOnList()
+  override def empty = ListStack()
 
-  implicit val arbitraryStack = StackOnList.arbitrary
+  implicit val arbitraryStack = ListStack.arbitrary
 }
 
 

@@ -105,8 +105,25 @@ case class BSTSetTest[A](implicit val arbitraryElem: Arbitrary[A], implicit val 
   implicit val arbitrarySet = BSTSet.arbitrary
 }
 
-object TestBSTInt extends SetAxioms(BSTSetTest[Int])
+object TestBSTSetInt extends SetAxioms(BSTSetTest[Int])
 
-object TestBSTChar extends SetAxioms(BSTSetTest[Char])
+object TestBSTSetChar extends SetAxioms(BSTSetTest[Char])
 
-object TestBSTTestData extends SetAxioms(BSTSetTest[TestData.Type])
+object TestBSTSetTestData extends SetAxioms(BSTSetTest[TestData.Type])
+
+
+case class ListSetTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
+  override type Elem = A
+
+  override type Set[A] = ListSet[A]
+
+  override def empty = ListSet()
+
+  implicit val arbitrarySet = ListSet.arbitrary
+}
+
+object TestListSetInt extends SetAxioms(ListSetTest[Int])
+
+object TestListSetChar extends SetAxioms(ListSetTest[Char])
+
+object TestListSetTestData extends SetAxioms(ListSetTest[TestData.Type])

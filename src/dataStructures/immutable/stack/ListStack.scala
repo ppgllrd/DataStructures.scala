@@ -8,7 +8,7 @@ package dataStructures.immutable.stack
 
 import org.scalacheck.{Arbitrary, Gen}
 
-case class StackOnList[+A] private(private val xs: List[A]) extends Stack[A] {
+case class ListStack[+A] private(private val xs: List[A]) extends Stack[A] {
   def this() {
     this(List())
   }
@@ -16,8 +16,8 @@ case class StackOnList[+A] private(private val xs: List[A]) extends Stack[A] {
   override def isEmpty: Boolean =
     xs.isEmpty
 
-  override def push[B >: A](x: B): StackOnList[B] =
-    StackOnList(x :: xs)
+  override def push[B >: A](x: B): ListStack[B] =
+    ListStack(x :: xs)
 
   override def top: A =
     if (isEmpty)
@@ -25,25 +25,25 @@ case class StackOnList[+A] private(private val xs: List[A]) extends Stack[A] {
     else
       xs.head
 
-  override def pop: StackOnList[A] =
+  override def pop: ListStack[A] =
     if (isEmpty)
       throw EmptyStackException("pop on empty stack")
     else
-      StackOnList(xs.tail)
+      ListStack(xs.tail)
 
   override def toString: String =
     xs.mkString(this.getClass.getSimpleName + "(", ",", ")")
 }
 
-object StackOnList {
-  def empty[A]: StackOnList[A] =
-    new StackOnList()
+object ListStack {
+  def empty[A]: ListStack[A] =
+    new ListStack()
 
-  def apply[A](): StackOnList[A] =
-    new StackOnList()
+  def apply[A](): ListStack[A] =
+    new ListStack()
 
-  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[StackOnList[A]] {
+  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[ListStack[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}
-      yield xs.foldRight(StackOnList.empty[A])((x, s) => s.push(x))
+      yield xs.foldRight(ListStack.empty[A])((x, s) => s.push(x))
   }
 }

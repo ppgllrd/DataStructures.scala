@@ -6,7 +6,7 @@
 
 package demos.immutable.stack
 
-import dataStructures.immutable.stack.{LinearStack, Stack, StackOnList}
+import dataStructures.immutable.stack.{LinearStack, ListStack, Stack}
 
 object Demos extends App {
   var s1: Stack[Int] = LinearStack[Int]()
@@ -25,7 +25,7 @@ object Demos extends App {
 
   println(s1 == s2)
 
-  var s3: Stack[Int] = StackOnList[Int]()
+  var s3: Stack[Int] = ListStack[Int]()
 
   for (x <- List.range(1, 10))
     s3 = s3.push(x)
