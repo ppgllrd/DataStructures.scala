@@ -55,8 +55,14 @@ object LinearStack {
   def apply[A](): LinearStack[A] =
     Empty
 
+  def factory[A]: StackFactory[A] = new StackFactory[A] {
+    override def empty: LinearStack[A] =
+      Empty
+  }
+
   implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[LinearStack[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}
       yield xs.foldRight(LinearStack.empty[A])((x, s) => s.push(x))
   }
 }
+

@@ -10,7 +10,7 @@ import dataStructures.immutable.searchTree.{BST, SearchTree}
 
 object BSTDictionary {
 
-  protected case class Rel[K, +V](key: K, value: V)
+  protected case class Rel[K, V](key: K, value: V)
 
   implicit def ordKey2Rel[K, V](implicit ord: Ordering[K]) = new Ordering[Rel[K, V]] {
     override def compare(x: Rel[K, V], y: Rel[K, V]): Int =
@@ -27,7 +27,7 @@ object BSTDictionary {
     new BSTDictionary()
 }
 
-case class BSTDictionary[K, +V] private(private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
+case class BSTDictionary[K, V] private(private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
     this(BST())
   }
@@ -38,7 +38,7 @@ case class BSTDictionary[K, +V] private(private val tree: SearchTree[BSTDictiona
   override def size: Int =
     tree.size
 
-  override def insert[VS >: V](key: K, value: VS): BSTDictionary[K, VS] =
+  override def insert(key: K, value: V): BSTDictionary[K, V] =
     BSTDictionary(tree.insert(BSTDictionary.Rel(key, value)))
 
   override def delete(key: K): BSTDictionary[K, V] =

@@ -6,12 +6,12 @@
 
 package dataStructures.immutable.dictionary
 
-trait Dictionary[K, +V] {
+trait Dictionary[K, V] {
   def isEmpty: Boolean
 
   def size: Int
 
-  def insert[VS >: V](key: K, value: VS): Dictionary[K, VS]
+  def insert(key: K, value: V): Dictionary[K, V]
 
   def delete(key: K): Dictionary[K, V]
 

@@ -42,6 +42,11 @@ object ListStack {
   def apply[A](): ListStack[A] =
     new ListStack()
 
+  def factory[A]: StackFactory[A] = new StackFactory[A] {
+    override def empty: ListStack[A] =
+      new ListStack[A]()
+  }
+
   implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[ListStack[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}
       yield xs.foldRight(ListStack.empty[A])((x, s) => s.push(x))

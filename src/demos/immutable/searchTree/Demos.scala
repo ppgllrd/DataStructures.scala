@@ -35,7 +35,7 @@ object Demos extends App {
 
   println(sum(t1), product(t1))
 
-  val t3 = BST(10, 5, 15, 1, 7, 20)
+  val t3 = BST.factory[Int].empty.insert(10).insert(5)
   println(t3)
 
   println(t3.deleteMaxim)
