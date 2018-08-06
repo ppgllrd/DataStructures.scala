@@ -1,19 +1,25 @@
+/** ****************************************************************************
+  * Data Structures in Scala
+  *
+  * Pepe Gallardo, 2018
+  * ****************************************************************************/
+
 package dataStructures.immutable.heap
 
-trait MergeableHeapOps[This[T] <: MergeableHeap[T, This]] {
-  def singleton[A](elem: A): This[A]
+trait MergeableHeapOps[A, This <: MergeableHeap[A, This]] {
+  def singleton(elem: A): This
 
-  def mergePairs[A](xs: List[This[A]])(implicit ord: Ordering[A]): List[This[A]] = xs match {
+  def mergePairs(xs: List[This]): List[This] = xs match {
     case List() | List(_) =>
       xs
     case h1 :: h2 :: hs =>
       h1.merge(h2) :: mergePairs(hs)
   }
 
-  def makeHeap[A](xs: Seq[A])(implicit ord: Ordering[A]): This[A] = {
+  def makeHeap(xs: Seq[A]): This = {
     require(xs.nonEmpty, "makeHeap needs a non-empty sequence")
 
-    var hs = List[This[A]]()
+    var hs = List[This]()
     for (x <- xs)
       hs ::= singleton(x)
 
@@ -23,11 +29,11 @@ trait MergeableHeapOps[This[T] <: MergeableHeap[T, This]] {
     hs.head
   }
 
-  def heapSort[A](xs: Array[A])(implicit ord: Ordering[A]): Unit = {
+  def heapSort(xs: Array[A]): Unit = {
     var h = makeHeap(xs)
     for (i <- 0 until xs.length) {
       xs(i) = h.minElem
-      h = h.delMin.asInstanceOf[This[A]] // this could be fixed by making delMin return an object of same type as this
+      h = h.delMin.asInstanceOf[This] // this could be fixed by making delMin return an object of same type as this
     }
   }
 }

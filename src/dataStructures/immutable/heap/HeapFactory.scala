@@ -6,14 +6,8 @@
 
 package dataStructures.immutable.heap
 
-trait Heap[A] {
-  def isEmpty: Boolean
+trait HeapFactory[A] {
+  def empty: Heap[A]
 
-  def size: Int
-
-  def insert(x: A): Heap[A]
-
-  def minElem: A
-
-  def delMin: Heap[A]
+  def singleton(x: A): Heap[A]
 }

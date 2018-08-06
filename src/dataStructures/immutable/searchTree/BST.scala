@@ -1,15 +1,9 @@
-/** ****************************************************************************
-  * Data Structures in Scala
-  *
-  * Pepe Gallardo, 2018
-  * ****************************************************************************/
-
 package dataStructures.immutable.searchTree
 
 import org.scalacheck.{Arbitrary, Gen}
 
-class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
-  private def join(lt: BST, rt: BST): BST =
+case class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
+  private def join(lt: Tree, rt: Tree): Tree =
     (lt, rt) match {
       case (Empty, _) =>
         rt
@@ -20,7 +14,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
         Node(x, lt, splitRt)
     }
 
-  sealed trait BST extends SearchTree[A] {
+  sealed trait Tree extends SearchTree[A] {
     override def isEmpty: Boolean = this match {
       case Empty =>
         true
@@ -55,7 +49,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
         true
     }
 
-    override def insert(e: A): BST = this match {
+    override def insert(e: A): Tree = this match {
       case Empty =>
         Node(e, Empty, Empty)
       case Node(x, lt, rt) =>
@@ -68,7 +62,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
           Node(x, lt, rt.insert(e))
     }
 
-    override def delete(e: A): BST = this match {
+    override def delete(e: A): Tree = this match {
       case Empty =>
         Empty
       case Node(x, lt, rt) =>
@@ -99,7 +93,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
         rt.maxim
     }
 
-    override def deleteMinim: BST = this match {
+    override def deleteMinim: Tree = this match {
       case Empty =>
         throw EmptySearchTreeException("deleteMinim on empty tree")
       case Node(x, Empty, rt) =>
@@ -108,7 +102,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
         Node(x, lt.deleteMinim, rt)
     }
 
-    override def deleteMaxim: BST = this match {
+    override def deleteMaxim: Tree = this match {
       case Empty =>
         throw EmptySearchTreeException("deleteMaxim on empty tree")
       case Node(x, lt, Empty) =>
@@ -140,7 +134,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
 
     // Alternative implementation of folds using a generic traversal
     private def traversal[B](z: B)(f: (A, B) => B)(order: (B => B, B => B, B => B) => B => B): B = {
-      def aux(bst: BST): B => B = bst match {
+      def aux(bst: Tree): B => B = bst match {
         case Empty =>
           identity
         case Node(x, lt, rt) =>
@@ -162,7 +156,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
     override def toString: String = {
       val sb = new StringBuilder
 
-      def aux(bst: BST): Unit = bst match {
+      def aux(bst: Tree): Unit = bst match {
         case Empty =>
           sb.append("Empty")
         case Node(x, lt, rt) =>
@@ -180,10 +174,10 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
     }
   }
 
-  protected object Empty extends BST
+  object Empty extends Tree
 
-  protected case class Node(e: A, lt: BST, rt: BST) extends BST {
-    def split: (A, BST) = this match {
+  protected case class Node(e: A, lt: Tree, rt: Tree) extends Tree {
+    def split: (A, Tree) = this match {
       case Node(x, Empty, rt) =>
         (x, rt)
       case Node(x, lt@Node(_, _, _), rt) =>
@@ -192,21 +186,21 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
     }
   }
 
-  override def empty: BST =
+  override def empty: Tree =
     Empty
 }
 
 object BST {
-  def empty[A](implicit ord: Ordering[A]): BSTFactory[A]#BST =
+  def empty[A](implicit ord: Ordering[A]): BSTFactory[A]#Tree =
     factory[A].empty
 
-  def apply[A]()(implicit ord: Ordering[A]): BSTFactory[A]#BST =
+  def apply[A]()(implicit ord: Ordering[A]): BSTFactory[A]#Tree =
     factory[A].empty
 
   def factory[A](implicit ord: Ordering[A]): BSTFactory[A] =
     new BSTFactory[A]()
 
-  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[SearchTree[A]] {
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[BSTFactory[A]#Tree] {
     for {xs <- Gen.listOf(a.arbitrary)}
       yield xs.foldRight(empty[A](ord))((x, bst) => bst.insert(x))
   }

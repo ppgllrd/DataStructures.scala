@@ -1,17 +1,22 @@
+/** ****************************************************************************
+  * Data Structures in Scala
+  *
+  * Pepe Gallardo, 2018
+  * ****************************************************************************/
+
 package dataStructures.immutable.heap
 
-object WBLH {
-  def empty[A]: WBLH[A] =
+import org.scalacheck.{Arbitrary, Gen}
+
+case class WBLHFactory[A](implicit ord: Ordering[A]) extends HeapFactory[A] {
+  override def empty: WBLH =
     Empty
 
-  def apply[A](): WBLH[A] =
-    Empty
-
-  def singleton[A](elem: A): WBLH[A] =
+  override def singleton(elem: A): WBLH =
     Node(elem, 1, Empty, Empty)
 
   // smart constructor: sets heaviest tree as left child
-  private def node[A](elem: A, h1: WBLH[A], h2: WBLH[A]): WBLH[A] = {
+  private def node(elem: A, h1: WBLH, h2: WBLH): WBLH = {
     val w1 = h1.weight
     val w2 = h2.weight
     val weight = 1 + (w1 max w2)
@@ -20,102 +25,97 @@ object WBLH {
     else
       Node(elem, weight, h2, h1)
   }
-}
 
-sealed trait WBLH[+A] extends MergeableHeap[A, WBLH] {
-  private def weight: Int = this match {
-    case Empty =>
-      0
-    case Node(_, w, _, _) =>
-      w
-  }
-
-  def isEmpty: Boolean = this match {
-    case Empty =>
-      true
-    case _ =>
-      false
-  }
-
-  def size: Int =
-    weight
-
-  def minElem: A = this match {
-    case Empty =>
-      throw EmptyHeapException("minElem on empty heap")
-    case Node(x, _, _, _) =>
-      x
-  }
-
-  override def merge[B >: A](that: WBLH[B])(implicit ord: Ordering[B]): WBLH[B] =
-    (this, that) match {
-      case (Empty, h2) =>
-        h2
-      case (h1, Empty) =>
-        h1
-      case (h1@Node(x1, _, lt1, rt1), h2@Node(x2, _, lt2, rt2)) =>
-        if (ord.compare(x1, x2) <= 0)
-          WBLH.node(x1, lt1, rt1.merge(h2))
-        else
-          WBLH.node(x2, lt2, rt2.merge(h1))
+  sealed trait WBLH extends MergeableHeap[A, WBLH] {
+    def weight: Int = this match {
+      case Empty =>
+        0
+      case Node(_, w, _, _) =>
+        w
     }
 
-  def insert[B >: A](elem: B)(implicit ord: Ordering[B]): WBLH[B] =
-    this.merge(WBLH.singleton(elem))
-
-  def delMin[B >: A](implicit ord: Ordering[B]): WBLH[B] = this match {
-    case Empty =>
-      throw EmptyHeapException("delMin on empty heap")
-    case Node(_, _, lt, rt) =>
-      lt.merge(rt.asInstanceOf[WBLH[B]]) // note this casting :-(
-  }
-
-  def mkString[B >: A](prefix: String, infix: String, suffix: String)(implicit ord: Ordering[B]): String = {
-    val sb = new StringBuilder(prefix)
-    var h = this.asInstanceOf[WBLH[B]] // note this casting :-(
-    var goOn = !h.isEmpty
-    while (goOn) {
-      sb.append(h.minElem)
-      h = h.delMin
-      goOn = !h.isEmpty
-      if (goOn)
-        sb.append(infix)
+    override def isEmpty: Boolean = this match {
+      case Empty =>
+        true
+      case _ =>
+        false
     }
-    sb.append(suffix)
-    sb.toString
+
+    override def size: Int =
+      weight
+
+    override def minElem: A = this match {
+      case Empty =>
+        throw EmptyHeapException("minElem on empty heap")
+      case Node(x, _, _, _) =>
+        x
+    }
+
+    override def merge(that: WBLH): WBLH =
+      (this, that) match {
+        case (Empty, h2) =>
+          h2
+        case (h1, Empty) =>
+          h1
+        case (h1@Node(x1, _, lt1, rt1), h2@Node(x2, _, lt2, rt2)) =>
+          if (ord.compare(x1, x2) <= 0)
+            node(x1, lt1, rt1.merge(h2))
+          else
+            node(x2, lt2, rt2.merge(h1))
+      }
+
+    override def insert(elem: A): WBLH =
+      this.merge(singleton(elem))
+
+    override def delMin: WBLH = this match {
+      case Empty =>
+        throw EmptyHeapException("delMin on empty heap")
+      case Node(_, _, lt, rt) =>
+        lt.merge(rt)
+    }
+
+    override def toString: String = {
+      val sb = new StringBuilder("WBLH(")
+      var h = this
+      var goOn = !h.isEmpty
+      while (goOn) {
+        sb.append(h.minElem)
+        h = h.delMin
+        goOn = !h.isEmpty
+        if (goOn)
+          sb.append(", ")
+      }
+      sb.append(')')
+      sb.toString
+    }
   }
+
+  private case class Node(elem: A, wght: Int, lt: WBLH, rt: WBLH) extends WBLH
+
+  private case object Empty extends WBLH
+
 }
 
-private case class Node[+A](elem: A, weight: Int, lt: WBLH[A], rt: WBLH[A]) extends WBLH[A]
+object WBLH {
+  def empty[A](implicit ord: Ordering[A]): WBLHFactory[A]#WBLH =
+    factory[A].empty
 
-private case object Empty extends WBLH[Nothing]
+  def apply[A]()(implicit ord: Ordering[A]): WBLHFactory[A]#WBLH =
+    factory[A].empty
 
+  def factory[A](implicit ord: Ordering[A]): WBLHFactory[A] =
+    new WBLHFactory[A]()
 
-object MergeableWBLHOps extends MergeableHeapOps[WBLH] {
-  override def singleton[A](elem: A): WBLH[A] =
-    WBLH.singleton(elem)
-}
+  def mergeableOps[A](implicit ord: Ordering[A]) = {
+    val factory = new WBLHFactory[A]()
+    new MergeableHeapOps[A, factory.WBLH] {
+      override def singleton(elem: A): factory.WBLH =
+        factory.singleton(elem)
+    }
+  }
 
-
-object Demo extends App {
-  var h1 = WBLH[Int]()
-
-  h1 = h1.insert(5)
-  h1 = h1.insert(7)
-  h1 = h1.insert(3)
-  h1 = h1.insert(9)
-  h1 = h1.insert(1)
-
-  println(h1)
-
-  println(h1.minElem)
-
-  h1 = h1.delMin
-
-  println(h1.mkString("WBLH(", ",", ")"))
-
-
-  var xs = Array(10, 3, 2, 10, 1, 9, 7)
-  MergeableWBLHOps.heapSort(xs)
-  println(xs.mkString(" "))
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[WBLHFactory[A]#WBLH] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(empty[A](ord))((x, bst) => bst.insert(x))
+  }
 }

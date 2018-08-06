@@ -6,7 +6,7 @@
 
 package dataStructures.immutable.dictionary
 
-import dataStructures.immutable.searchTree.{BST, SearchTree}
+import dataStructures.immutable.searchTree.{BST, BSTFactory, SearchTree}
 
 case class BSTDictionary[K, V] private(private val tree: SearchTree[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
@@ -52,10 +52,7 @@ case class BSTDictionary[K, V] private(private val tree: SearchTree[BSTDictionar
     keysValues.mkString(this.getClass.getSimpleName + "(", ",", ")")
 }
 
-case class BSTDictionaryFactory[K, V](implicit ord: Ordering[K]) extends DictionaryFactory[K, V] {
-  override def empty: BSTDictionary[K, V] =
-    new BSTDictionary()
-}
+case class BSTDictionaryFactory[K, V](implicit ord: Ordering[K]) extends BSTDictionary.Factory[K, V]
 
 object BSTDictionary {
 
@@ -75,6 +72,13 @@ object BSTDictionary {
   def apply[K, V]()(implicit ord: Ordering[K]): BSTDictionary[K, V] =
     new BSTDictionary()
 
-  def factory[K, V](implicit ord: Ordering[K]): BSTDictionaryFactory[K, V] =
-    new BSTDictionaryFactory()
+  class Factory[K, V](implicit ord: Ordering[K]) extends DictionaryFactory[K, V] {
+    val bstFactory = new BSTFactory[Rel[K, V]]()(ordKey2Rel(ord))
+
+    override def empty: BSTDictionary[K, V] =
+      new BSTDictionary(bstFactory.empty)
+  }
+
+  def factory[K, V](implicit ord: Ordering[K]): BSTDictionary.Factory[K, V] =
+    new Factory()
 }

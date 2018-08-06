@@ -23,4 +23,21 @@ object Demos extends App {
   println(d1)
 
   println(d1.valueOf(0))
+
+
+  val factory = BSTDictionary.factory[Int, String]
+
+  var d2: Dictionary[Int, String] = factory.empty
+
+  d2 = d2.insert(1, "One")
+  d2 = d2.insert(2, "Two")
+  d2 = d2.insert(0, "Zero")
+
+  println(d2)
+
+  d2 = d2.delete(2)
+
+  println(d2)
+
+  println(d2.valueOf(0))
 }
