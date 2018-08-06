@@ -52,12 +52,20 @@ private case object Empty extends LinearQueue[Nothing]
 
 private case class Node[A](x: A, next: LinearQueue[A]) extends LinearQueue[A]
 
+case class LinearQueueFactory[A]() extends QueueFactory[A] {
+  override def empty: LinearQueue[A] =
+    Empty
+}
+
 object LinearQueue {
   def empty[A]: LinearQueue[A] =
     Empty
 
   def apply[A](): LinearQueue[A] =
     Empty
+
+  def factory[A]: LinearQueueFactory[A] =
+    new LinearQueueFactory()
 
   implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[LinearQueue[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}

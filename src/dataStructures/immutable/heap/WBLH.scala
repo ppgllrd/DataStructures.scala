@@ -1,10 +1,10 @@
 package dataStructures.immutable.heap
 
 object WBLH {
-  def apply[A](): WBLH[A] =
+  def empty[A]: WBLH[A] =
     Empty
 
-  def empty[A](): WBLH[A] =
+  def apply[A](): WBLH[A] =
     Empty
 
   def singleton[A](elem: A): WBLH[A] =

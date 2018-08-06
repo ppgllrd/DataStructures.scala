@@ -35,6 +35,11 @@ case class ListStack[+A] private(private val xs: List[A]) extends Stack[A] {
     xs.mkString(this.getClass.getSimpleName + "(", ",", ")")
 }
 
+case class ListStackFactory[A]() extends StackFactory[A] {
+  override def empty: ListStack[A] =
+    new ListStack()
+}
+
 object ListStack {
   def empty[A]: ListStack[A] =
     new ListStack()
@@ -42,10 +47,8 @@ object ListStack {
   def apply[A](): ListStack[A] =
     new ListStack()
 
-  def factory[A]: StackFactory[A] = new StackFactory[A] {
-    override def empty: ListStack[A] =
-      new ListStack[A]()
-  }
+  def factory[A]: ListStackFactory[A] =
+    new ListStackFactory()
 
   implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[ListStack[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}

@@ -9,19 +9,6 @@ package dataStructures.immutable.queue
 import dataStructures.immutable.stack.{LinearStack, Stack}
 import org.scalacheck.{Arbitrary, Gen}
 
-object TwoStacksQueue {
-  def apply[A](): TwoStacksQueue[A] =
-    new TwoStacksQueue[A]()
-
-  def empty[A]: TwoStacksQueue[A] =
-    new TwoStacksQueue[A]()
-
-  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[TwoStacksQueue[A]] {
-    for {xs <- Gen.listOf(a.arbitrary)}
-      yield xs.foldRight(TwoStacksQueue.empty[A])((x, s) => s.enqueue(x))
-  }
-}
-
 class TwoStacksQueue[+A] private(val sFront: Stack[A], val sRear: Stack[A]) extends Queue[A] {
   def this() {
     this(LinearStack(), LinearStack())
@@ -94,5 +81,26 @@ class TwoStacksQueue[+A] private(val sFront: Stack[A], val sRear: Stack[A]) exte
     }
     sb.append(')')
     sb.toString()
+  }
+}
+
+case class TwoStacksQueueFactory[A]() extends QueueFactory[A] {
+  override def empty: TwoStacksQueue[A] =
+    new TwoStacksQueue[A]()
+}
+
+object TwoStacksQueue {
+  def empty[A]: TwoStacksQueue[A] =
+    new TwoStacksQueue[A]()
+
+  def apply[A](): TwoStacksQueue[A] =
+    new TwoStacksQueue[A]()
+
+  def factory[A]: TwoStacksQueueFactory[A] =
+    new TwoStacksQueueFactory()
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[TwoStacksQueue[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(TwoStacksQueue.empty[A])((x, s) => s.enqueue(x))
   }
 }

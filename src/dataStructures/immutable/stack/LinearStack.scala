@@ -48,6 +48,11 @@ private case object Empty extends LinearStack[Nothing]
 
 private case class Node[A](x: A, next: LinearStack[A]) extends LinearStack[A]
 
+case class LinearStackFactory[A]() extends StackFactory[A] {
+  override def empty: LinearStack[A] =
+    Empty
+}
+
 object LinearStack {
   def empty[A]: LinearStack[A] =
     Empty
@@ -55,10 +60,8 @@ object LinearStack {
   def apply[A](): LinearStack[A] =
     Empty
 
-  def factory[A]: StackFactory[A] = new StackFactory[A] {
-    override def empty: LinearStack[A] =
-      Empty
-  }
+  def factory[A]: LinearStackFactory[A] =
+    new LinearStackFactory()
 
   implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[LinearStack[A]] {
     for {xs <- Gen.listOf(a.arbitrary)}

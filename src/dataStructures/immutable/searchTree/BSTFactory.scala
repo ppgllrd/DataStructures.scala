@@ -6,6 +6,8 @@
 
 package dataStructures.immutable.searchTree
 
+import org.scalacheck.{Arbitrary, Gen}
+
 class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
   private def join(lt: BST, rt: BST): BST =
     (lt, rt) match {
@@ -18,7 +20,7 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
         Node(x, lt, splitRt)
     }
 
-  protected sealed trait BST extends SearchTree[A] {
+  sealed trait BST extends SearchTree[A] {
     override def isEmpty: Boolean = this match {
       case Empty =>
         true
@@ -194,3 +196,18 @@ class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
     Empty
 }
 
+object BST {
+  def empty[A](implicit ord: Ordering[A]): BSTFactory[A]#BST =
+    factory[A].empty
+
+  def apply[A]()(implicit ord: Ordering[A]): BSTFactory[A]#BST =
+    factory[A].empty
+
+  def factory[A](implicit ord: Ordering[A]): BSTFactory[A] =
+    new BSTFactory[A]()
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[SearchTree[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(empty[A](ord))((x, bst) => bst.insert(x))
+  }
+}

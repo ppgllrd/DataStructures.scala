@@ -9,22 +9,9 @@ package dataStructures.immutable.set
 import dataStructures.immutable.searchTree.{BST, SearchTree}
 import org.scalacheck.{Arbitrary, Gen}
 
-object BSTSet {
-  def empty[A]()(implicit ord: Ordering[A]): BSTSet[A] =
-    new BSTSet[A]()
-
-  def apply[A]()(implicit ord: Ordering[A]): BSTSet[A] =
-    new BSTSet[A]()
-
-  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[BSTSet[A]] {
-    for {xs <- Gen.listOf(a.arbitrary)}
-      yield xs.foldRight(BSTSet.empty[A])((x, s) => s.insert(x))
-  }
-}
-
 case class BSTSet[A] private(private val tree: SearchTree[A])(implicit ord: Ordering[A]) extends Set[A] {
   def this()(implicit ord: Ordering[A]) {
-    this(BST())
+    this(BST.empty)
   }
 
   override def isEmpty: Boolean =
@@ -54,4 +41,25 @@ case class BSTSet[A] private(private val tree: SearchTree[A])(implicit ord: Orde
 
   override def toString: String =
     fold(List[A]())(_ :: _).mkString(this.getClass.getSimpleName + "(", ",", ")")
+}
+
+case class BSTSetFactory[A](implicit ord: Ordering[A]) extends SetFactory[A] {
+  override def empty: BSTSet[A] =
+    BSTSet[A]()
+}
+
+object BSTSet {
+  def empty[A](implicit ord: Ordering[A]): BSTSet[A] =
+    new BSTSet[A]()
+
+  def apply[A]()(implicit ord: Ordering[A]): BSTSet[A] =
+    new BSTSet[A]()
+
+  def factory[A](implicit ord: Ordering[A]): BSTSetFactory[A] =
+    new BSTSetFactory[A]()
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[BSTSet[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(BSTSet.empty[A])((x, s) => s.insert(x))
+  }
 }

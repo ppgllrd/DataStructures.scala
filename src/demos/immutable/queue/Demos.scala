@@ -16,7 +16,7 @@ object Demos extends App {
 
   println(q1)
 
-  var q2: Queue[Int] = LinearQueue[Int]()
+  var q2: Queue[Int] = LinearQueue.factory[Int].empty
 
   for (x <- List.range(1, 10))
     q2 = q2.enqueue(x)
@@ -25,7 +25,9 @@ object Demos extends App {
 
   println(q1 == q2)
 
-  var q3: Queue[Int] = TwoStacksQueue[Int]()
+  val factory = TwoStacksQueue.factory[Int]
+
+  var q3: Queue[Int] = factory.empty
 
   for (x <- List.range(1, 10))
     q3 = q3.enqueue(x)
@@ -46,7 +48,7 @@ object Demos extends App {
 
   println()
 
-  var q4 = TwoStacksQueue[Int]()
+  var q4 = factory.empty
 
   q4 = q4.enqueue(1)
   println(q4)

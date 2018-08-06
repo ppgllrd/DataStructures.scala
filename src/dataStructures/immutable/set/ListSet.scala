@@ -8,19 +8,6 @@ package dataStructures.immutable.set
 
 import org.scalacheck.{Arbitrary, Gen}
 
-object ListSet {
-  def empty[A](): ListSet[A] =
-    new ListSet[A]()
-
-  def apply[A](): ListSet[A] =
-    new ListSet[A]()
-
-  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[ListSet[A]] {
-    for {xs <- Gen.listOf(a.arbitrary)}
-      yield xs.foldRight(ListSet.empty[A])((x, s) => s.insert(x))
-  }
-}
-
 class ListSet[A] private(elems: List[A]) extends Set[A] {
   def this() {
     this(List())
@@ -56,4 +43,25 @@ class ListSet[A] private(elems: List[A]) extends Set[A] {
 
   override def toString: String =
     elems.mkString(this.getClass.getSimpleName + "(", ",", ")")
+}
+
+case class ListSetFactory[A]() extends SetFactory[A] {
+  override def empty: ListSet[A] =
+    new ListSet[A]()
+}
+
+object ListSet {
+  def empty[A]: ListSet[A] =
+    new ListSet[A]()
+
+  def apply[A](): ListSet[A] =
+    new ListSet[A]()
+
+  def factory[A]: ListSetFactory[A] =
+    new ListSetFactory[A]()
+
+  implicit def arbitrary[A](implicit a: Arbitrary[A]) = Arbitrary[ListSet[A]] {
+    for {xs <- Gen.listOf(a.arbitrary)}
+      yield xs.foldRight(ListSet.empty[A])((x, s) => s.insert(x))
+  }
 }
