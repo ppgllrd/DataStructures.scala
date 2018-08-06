@@ -4,8 +4,8 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.immutable.set
+package dataStructures.mutable.searchTree
 
-trait SetFactory[A] {
-  def empty: Set[A]
+trait SearchTreeFactory[A] {
+  def empty: SearchTree[A]
 }

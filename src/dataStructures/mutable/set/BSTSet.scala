@@ -8,14 +8,6 @@ package dataStructures.mutable.set
 
 import dataStructures.mutable.searchTree.BST
 
-object BSTSet {
-  def apply[A]()(implicit ord: Ordering[A]): BSTSet[A] =
-    new BSTSet[A]()
-
-  def empty[A]()(implicit ord: Ordering[A]): BSTSet[A] =
-    new BSTSet[A]()
-}
-
 class BSTSet[A] private(private val tree: BST[A])(implicit ord: Ordering[A]) extends Set[A] {
   def this()(implicit ord: Ordering[A]) {
     this(BST())
@@ -56,4 +48,20 @@ class BSTSet[A] private(private val tree: BST[A])(implicit ord: Ordering[A]) ext
     sb.append(')')
     sb.toString
   }
+}
+
+class BSTSetFactory[A](implicit ord: Ordering[A]) extends SetFactory[A] {
+  override def empty: BSTSet[A] =
+    new BSTSet[A]()
+}
+
+object BSTSet {
+  def empty[A](implicit ord: Ordering[A]): BSTSet[A] =
+    new BSTSet[A]()
+
+  def apply[A]()(implicit ord: Ordering[A]): BSTSet[A] =
+    new BSTSet[A]()
+
+  def factory[A](implicit ord: Ordering[A]): BSTSetFactory[A] =
+    new BSTSetFactory[A]()
 }

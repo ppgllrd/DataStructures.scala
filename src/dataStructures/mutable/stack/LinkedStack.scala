@@ -6,14 +6,6 @@
 
 package dataStructures.mutable.stack
 
-object LinkedStack {
-
-  private case class Node[E](elem: E, next: Node[E]) // this is a static class
-
-  def apply[A](): LinkedStack[A] =
-    new LinkedStack[A]()
-}
-
 class LinkedStack[A] extends Stack[A] {
   private var topNode: LinkedStack.Node[A] = null
 
@@ -49,4 +41,23 @@ class LinkedStack[A] extends Stack[A] {
     sb.append(')')
     sb.toString
   }
+}
+
+case class LinkedStackFactory[A]() extends StackFactory[A] {
+  def empty: LinkedStack[A] =
+    new LinkedStack[A]()
+}
+
+object LinkedStack {
+
+  private case class Node[E](elem: E, next: Node[E]) // this is a static class
+
+  def empty[A]: LinkedStack[A] =
+    new LinkedStack[A]()
+
+  def apply[A](): LinkedStack[A] =
+    new LinkedStack[A]()
+
+  def factory[A]: LinkedStackFactory[A] =
+    new LinkedStackFactory[A]()
 }

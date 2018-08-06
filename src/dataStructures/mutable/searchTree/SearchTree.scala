@@ -11,13 +11,13 @@ trait SearchTree[A] {
 
   def size: Int
 
-  def search(e: A)(implicit ord: Ordering[A]): Option[A]
+  def search(e: A): Option[A]
 
-  def isElem(e: A)(implicit ord: Ordering[A]): Boolean
+  def isElem(e: A): Boolean
 
-  def insert(e: A)(implicit ord: Ordering[A]): Unit
+  def insert(e: A): Unit
 
-  def delete(e: A)(implicit ord: Ordering[A]): Unit
+  def delete(e: A): Unit
 
   def minim: A
 

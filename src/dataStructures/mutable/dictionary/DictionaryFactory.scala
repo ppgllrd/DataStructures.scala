@@ -4,8 +4,8 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.immutable.set
+package dataStructures.mutable.dictionary
 
-trait SetFactory[A] {
-  def empty: Set[A]
+trait DictionaryFactory[K, V] {
+  def empty: Dictionary[K, V]
 }

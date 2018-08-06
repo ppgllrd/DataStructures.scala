@@ -8,28 +8,9 @@ package dataStructures.mutable.dictionary
 
 import dataStructures.mutable.searchTree.BST
 
-object BSTDictionary {
-
-  protected case class Rel[K, V](key: K, value: V)
-
-  implicit def ordKey2Rel[K, V](implicit ord: Ordering[K]) = new Ordering[Rel[K, V]] {
-    override def compare(x: Rel[K, V], y: Rel[K, V]): Int =
-      ord.compare(x.key, y.key)
-  }
-
-  private def withKey[K, V](key: K): Rel[K, V] =
-    Rel(key, null.asInstanceOf[V])
-
-  def empty[K, V](implicit ord: Ordering[K]): BSTDictionary[K, V] =
-    new BSTDictionary()
-
-  def apply[K, V]()(implicit ord: Ordering[K]): BSTDictionary[K, V] =
-    new BSTDictionary()
-}
-
 class BSTDictionary[K, V] private(tree: BST[BSTDictionary.Rel[K, V]])(implicit ord: Ordering[K]) extends Dictionary[K, V] {
   def this()(implicit ord: Ordering[K]) {
-    this(BST())
+    this(BST.empty(BSTDictionary.ordKey2Rel(ord)))
   }
 
   override def isEmpty: Boolean =
@@ -93,4 +74,30 @@ class BSTDictionary[K, V] private(tree: BST[BSTDictionary.Rel[K, V]])(implicit o
     sb.append(')')
     sb.toString
   }
+}
+
+case class BSTDictionaryFactory[K, V](implicit ord: Ordering[K]) extends DictionaryFactory[K, V] {
+  override def empty: BSTDictionary[K, V] =
+    new BSTDictionary()
+}
+
+object BSTDictionary {
+  def empty[K, V](implicit ord: Ordering[K]): BSTDictionary[K, V] =
+    new BSTDictionary()
+
+  def apply[K, V]()(implicit ord: Ordering[K]): BSTDictionary[K, V] =
+    new BSTDictionary()
+
+  def factory[K, V]()(implicit ord: Ordering[K]): BSTDictionaryFactory[K, V] =
+    new BSTDictionaryFactory[K, V]()
+
+  protected case class Rel[K, V](key: K, value: V)
+
+  implicit def ordKey2Rel[K, V](implicit ord: Ordering[K]) = new Ordering[Rel[K, V]] {
+    override def compare(x: Rel[K, V], y: Rel[K, V]): Int =
+      ord.compare(x.key, y.key)
+  }
+
+  private def withKey[K, V](key: K): Rel[K, V] =
+    Rel(key, null.asInstanceOf[V])
 }

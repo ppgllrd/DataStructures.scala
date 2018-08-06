@@ -8,16 +8,6 @@ package dataStructures.mutable.stack
 
 import scala.reflect.ClassTag
 
-object ArrayStack {
-  private val defaultInitialCapacity = 128
-
-  def apply[A: ClassTag](): ArrayStack[A] =
-    new ArrayStack[A]()
-
-  def apply[A: ClassTag](initialCapacity: Int): ArrayStack[A] =
-    new ArrayStack[A](initialCapacity)
-}
-
 class ArrayStack[A: ClassTag](initialCapacity: Int) extends Stack[A] {
   private var elements = new Array[A](initialCapacity)
   private var nextFree = 0
@@ -66,4 +56,35 @@ class ArrayStack[A: ClassTag](initialCapacity: Int) extends Stack[A] {
     sb.append(')')
     sb.toString
   }
+}
+
+case class ArrayStackFactory[A: ClassTag](initialCapacity: Int) extends StackFactory[A] {
+  def this() {
+    this(ArrayStack.defaultInitialCapacity)
+  }
+
+  def empty: ArrayStack[A] =
+    new ArrayStack[A](initialCapacity)
+}
+
+object ArrayStack {
+  val defaultInitialCapacity = 128
+
+  def empty[A: ClassTag](): ArrayStack[A] =
+    new ArrayStack[A]()
+
+  def empty[A: ClassTag](initialCapacity: Int): ArrayStack[A] =
+    new ArrayStack[A](initialCapacity)
+
+  def apply[A: ClassTag](): ArrayStack[A] =
+    new ArrayStack[A]()
+
+  def apply[A: ClassTag](initialCapacity: Int): ArrayStack[A] =
+    new ArrayStack[A](initialCapacity)
+
+  def factory[A: ClassTag]: ArrayStackFactory[A] =
+    new ArrayStackFactory[A]()
+
+  def factory[A: ClassTag](initialCapacity: Int): ArrayStackFactory[A] =
+    new ArrayStackFactory[A](initialCapacity)
 }

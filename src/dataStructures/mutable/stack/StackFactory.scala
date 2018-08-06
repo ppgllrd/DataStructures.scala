@@ -4,8 +4,8 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.immutable.set
+package dataStructures.mutable.stack
 
-trait SetFactory[A] {
-  def empty: Set[A]
+trait StackFactory[A] {
+  def empty: Stack[A]
 }

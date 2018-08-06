@@ -4,7 +4,7 @@
   * Pepe Gallardo, 2018
   * ****************************************************************************/
 
-package dataStructures.immutable.set
+package dataStructures.mutable.set
 
 trait SetFactory[A] {
   def empty: Set[A]

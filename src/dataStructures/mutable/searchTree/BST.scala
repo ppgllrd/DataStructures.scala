@@ -6,75 +6,8 @@
 
 package dataStructures.mutable.searchTree
 
-object BST {
-
-  private case class Node[E](var elem: E, var lt: Node[E], var rt: Node[E])
-
-  def empty[A]: BST[A] =
-    new BST[A]
-
-  def apply[A](): BST[A] =
-    new BST[A]
-
-  private def searchAux[A](node: Node[A], e: A)(implicit ord: Ordering[A]): Option[A] =
-    if (node == null)
-      None
-    else {
-      val cmp = ord.compare(e, node.elem)
-      if (cmp == 0)
-        Some(node.elem)
-      else if (cmp < 0)
-        searchAux(node.lt, e)
-      else
-        searchAux(node.rt, e)
-    }
-
-  private def split[A](node: Node[A]): (A, Node[A]) =
-    if (node.lt == null)
-      (node.elem, node.rt)
-    else {
-      val (x, splitLt) = split(node.lt)
-      node.lt = splitLt
-      (x, node)
-    }
-
-  private def join[A](node: Node[A]): Node[A] =
-    if (node.lt == null)
-      return node.rt
-    else if (node.rt == null)
-      return node.lt
-    else {
-      val (elem, splitRt) = split(node.rt)
-      node.elem = elem
-      node.rt = splitRt
-      return node
-    }
-
-  private def deleteMinimAux[A](node: Node[A]): Node[A] =
-    if (node.lt == null)
-      return node.rt
-    else {
-      node.lt = deleteMinimAux(node.lt)
-      return node
-    }
-
-  private def deleteMaximAux[A](node: Node[A]): Node[A] =
-    if (node.rt == null)
-      return node.lt
-    else {
-      node.rt = deleteMaximAux(node.rt)
-      return node
-    }
-
-  private def copyAux[A](node: Node[A]): Node[A] =
-    if (node == null)
-      null
-    else
-      Node(node.elem, copyAux(node.lt), copyAux(node.rt))
-}
-
-class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends SearchTree[A] {
-  def this() {
+class BST[A] private(private var root: BST.Node[A], private var sz: Int)(implicit ord: Ordering[A]) extends SearchTree[A] {
+  def this()(implicit ord: Ordering[A]) {
     this(null, 0)
   }
 
@@ -84,10 +17,10 @@ class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends
   override def size: Int =
     sz
 
-  override def search(e: A)(implicit ord: Ordering[A]): Option[A] =
+  override def search(e: A): Option[A] =
     BST.searchAux(root, e)
 
-  override def isElem(e: A)(implicit ord: Ordering[A]): Boolean =
+  override def isElem(e: A): Boolean =
     search(e) match {
       case None =>
         false
@@ -95,7 +28,7 @@ class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends
         true
     }
 
-  private def insertAux(node: BST.Node[A], e: A)(implicit ord: Ordering[A]): BST.Node[A] = {
+  private def insertAux(node: BST.Node[A], e: A): BST.Node[A] = {
     var result: BST.Node[A] = node
     if (node == null) {
       result = BST.Node(e, null, null)
@@ -112,10 +45,10 @@ class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends
     return result
   }
 
-  override def insert(e: A)(implicit ord: Ordering[A]): Unit =
+  override def insert(e: A): Unit =
     root = insertAux(root, e)
 
-  private def deleteAux(node: BST.Node[A], e: A)(implicit ord: Ordering[A]): BST.Node[A] = {
+  private def deleteAux(node: BST.Node[A], e: A): BST.Node[A] = {
     var result: BST.Node[A] = node
     if (node == null) {
       ;
@@ -132,7 +65,7 @@ class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends
     return result
   }
 
-  override def delete(e: A)(implicit ord: Ordering[A]): Unit =
+  override def delete(e: A): Unit =
     root = deleteAux(root, e)
 
   override def minim: A =
@@ -262,4 +195,78 @@ class BST[A] private(private var root: BST.Node[A], private var sz: Int) extends
 
     return aux(root)
   }
+}
+
+class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A] {
+  override def empty: SearchTree[A] =
+    new BST[A]
+}
+
+object BST {
+  def empty[A](implicit ord: Ordering[A]): BST[A] =
+    new BST[A]
+
+  def apply[A]()(implicit ord: Ordering[A]): BST[A] =
+    new BST[A]
+
+  def factory[A](implicit ord: Ordering[A]): BSTFactory[A] =
+    new BSTFactory[A]()
+
+  private case class Node[E](var elem: E, var lt: Node[E], var rt: Node[E]) {
+    def split: (E, Node[E]) =
+      if (lt == null)
+        (elem, rt)
+      else {
+        val (x, splitLt) = lt.split
+        lt = splitLt
+        (x, this)
+      }
+  }
+
+  private def searchAux[A](node: Node[A], e: A)(implicit ord: Ordering[A]): Option[A] =
+    if (node == null)
+      None
+    else {
+      val cmp = ord.compare(e, node.elem)
+      if (cmp == 0)
+        Some(node.elem)
+      else if (cmp < 0)
+        searchAux(node.lt, e)
+      else
+        searchAux(node.rt, e)
+    }
+
+  private def join[A](node: Node[A]): Node[A] =
+    if (node.lt == null)
+      return node.rt
+    else if (node.rt == null)
+      return node.lt
+    else {
+      val (elem, splitRt) = node.rt.split
+      node.elem = elem
+      node.rt = splitRt
+      return node
+    }
+
+  private def deleteMinimAux[A](node: Node[A]): Node[A] =
+    if (node.lt == null)
+      return node.rt
+    else {
+      node.lt = deleteMinimAux(node.lt)
+      return node
+    }
+
+  private def deleteMaximAux[A](node: Node[A]): Node[A] =
+    if (node.rt == null)
+      return node.lt
+    else {
+      node.rt = deleteMaximAux(node.rt)
+      return node
+    }
+
+  private def copyAux[A](node: Node[A]): Node[A] =
+    if (node == null)
+      null
+    else
+      Node(node.elem, copyAux(node.lt), copyAux(node.rt))
 }

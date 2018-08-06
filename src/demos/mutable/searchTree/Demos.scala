@@ -39,4 +39,13 @@ object Demos extends App {
 
   t1.deleteMinim
   println(t1)
+
+
+  val factory = BST.factory[Int]
+
+  val t2 = factory.empty
+  for (x <- List(10, 5, 15, 1, 7, 20))
+    t2.insert(x)
+
+  println(t2)
 }

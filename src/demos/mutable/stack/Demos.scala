@@ -23,4 +23,14 @@ object Demos extends App {
     s2.push(x)
 
   println(s2)
+
+
+  val factory = ArrayStack.factory[Int](5)
+
+  val s3: Stack[Int] = factory.empty
+
+  for (x <- List.range(1, 10))
+    s3.push(x)
+
+  println(s3)
 }
