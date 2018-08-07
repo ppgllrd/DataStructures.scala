@@ -6,20 +6,20 @@
 
 package dataStructures.immutable.heap
 
-trait MergeableHeapOps[A, This <: MergeableHeap[A, This]] {
-  def singleton(elem: A): This
+trait MergeableHeapFactory[A] extends HeapFactory[A] {
+  override type Heap <: dataStructures.immutable.heap.MergeableHeap[A, Heap]
 
-  def mergePairs(xs: List[This]): List[This] = xs match {
+  private def mergePairs(xs: List[Heap]): List[Heap] = xs match {
     case List() | List(_) =>
       xs
     case h1 :: h2 :: hs =>
       h1.merge(h2) :: mergePairs(hs)
   }
 
-  def makeHeap(xs: Seq[A]): This = {
+  def makeHeap(xs: A*): Heap = {
     require(xs.nonEmpty, "makeHeap needs a non-empty sequence")
 
-    var hs = List[This]()
+    var hs = List[Heap]()
     for (x <- xs)
       hs ::= singleton(x)
 
@@ -30,10 +30,10 @@ trait MergeableHeapOps[A, This <: MergeableHeap[A, This]] {
   }
 
   def heapSort(xs: Array[A]): Unit = {
-    var h = makeHeap(xs)
+    var h = makeHeap(xs: _*)
     for (i <- 0 until xs.length) {
       xs(i) = h.minElem
-      h = h.delMin.asInstanceOf[This] // this could be fixed by making delMin return an object of same type as this
+      h = h.delMin.asInstanceOf[Heap] // this could be fixed by making delMin return an object of same type as this
     }
   }
 }

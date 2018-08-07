@@ -6,7 +6,7 @@
 
 package demos.immutable.heap
 
-import dataStructures.immutable.heap.WBLH
+import dataStructures.immutable.heap.{SkewHeap, SkewHeapFactory, WBLH, WBLHFactory}
 
 object Demos extends App {
   val factory = WBLH.factory[Int]
@@ -33,7 +33,20 @@ object Demos extends App {
 
   println(h3)
 
-  var xs = Array(10, 3, 2, 10, 1, 9, 7)
-  WBLH.mergeableOps[Int].heapSort(xs)
+  val xs = Array(10, 3, 2, 10, 1, 9, 7)
+  WBLHFactory[Int].heapSort(xs)
   println(xs.mkString(" "))
+
+
+  val ys = Array(10, 3, 2, 10, 1, 9, 7)
+  SkewHeapFactory[Int].heapSort(ys)
+  println(ys.mkString(" "))
+
+
+  val h4 = SkewHeap.empty[Int].insert(10).insert(5).insert(3).insert(9)
+  println(h4)
+
+
+  val h5 = SkewHeapFactory[Int].makeHeap(10, 4, 6, 3, 2)
+  println(h5)
 }

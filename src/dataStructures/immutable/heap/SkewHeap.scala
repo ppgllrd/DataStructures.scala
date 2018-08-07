@@ -8,34 +8,16 @@ package dataStructures.immutable.heap
 
 import org.scalacheck.{Arbitrary, Gen}
 
-case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactory[A] {
-  override type Heap = WBLH
+case class SkewHeapFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactory[A] {
+  override type Heap = SkewHeap
 
-  override def empty: WBLH =
+  override def empty: SkewHeap =
     Empty
 
-  override def singleton(elem: A): WBLH =
-    Node(elem, 1, Empty, Empty)
+  override def singleton(elem: A): SkewHeap =
+    Node(elem, Empty, Empty)
 
-  // smart constructor: sets heaviest tree as left child
-  private def node(elem: A, h1: WBLH, h2: WBLH): WBLH = {
-    val w1 = h1.weight
-    val w2 = h2.weight
-    val weight = 1 + (w1 max w2)
-    if (w1 >= w2)
-      Node(elem, weight, h1, h2)
-    else
-      Node(elem, weight, h2, h1)
-  }
-
-  sealed trait WBLH extends MergeableHeap[A, WBLH] {
-    def weight: Int = this match {
-      case Empty =>
-        0
-      case Node(_, w, _, _) =>
-        w
-    }
-
+  sealed trait SkewHeap extends MergeableHeap[A, SkewHeap] {
     override def isEmpty: Boolean = this match {
       case Empty =>
         true
@@ -43,41 +25,48 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
         false
     }
 
-    override def size: Int =
-      weight
+    override def size: Int = this match {
+      case Empty =>
+        0
+      case Node(_, lt, rt) =>
+        1 + lt.size + rt.size
+    }
 
     override def minElem: A = this match {
       case Empty =>
         throw EmptyHeapException("minElem on empty heap")
-      case Node(x, _, _, _) =>
+      case Node(x, _, _) =>
         x
     }
 
-    override def merge(that: WBLH): WBLH =
+    /* Merge heaps along right spines enforcing heap order property.
+     * Swap children for nodes in right spine of resulting heap.
+     */
+    override def merge(that: SkewHeap): SkewHeap =
       (this, that) match {
         case (Empty, h2) =>
           h2
         case (h1, Empty) =>
           h1
-        case (h1@Node(x1, _, lt1, rt1), h2@Node(x2, _, lt2, rt2)) =>
+        case (h1@Node(x1, lt1, rt1), h2@Node(x2, lt2, rt2)) =>
           if (ord.compare(x1, x2) <= 0)
-            node(x1, lt1, rt1.merge(h2))
+            Node(x1, h2.merge(rt1), lt1)
           else
-            node(x2, lt2, rt2.merge(h1))
+            Node(x2, h1.merge(rt2), lt2)
       }
 
-    override def insert(elem: A): WBLH =
+    override def insert(elem: A): SkewHeap =
       this.merge(singleton(elem))
 
-    override def delMin: WBLH = this match {
+    override def delMin: SkewHeap = this match {
       case Empty =>
         throw EmptyHeapException("delMin on empty heap")
-      case Node(_, _, lt, rt) =>
+      case Node(_, lt, rt) =>
         lt.merge(rt)
     }
 
     def mkString: String = {
-      val sb = new StringBuilder("WBLH(")
+      val sb = new StringBuilder("SkewHeap(")
       var h = this
       var goOn = !h.isEmpty
       while (goOn) {
@@ -94,10 +83,10 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
     override def toString: String = {
       val sb = new StringBuilder
 
-      def aux(bst: WBLH): Unit = bst match {
+      def aux(bst: SkewHeap): Unit = bst match {
         case Empty =>
           sb.append("Empty")
-        case Node(x, _, lt, rt) =>
+        case Node(x, lt, rt) =>
           sb.append("Node(")
           sb.append(x)
           sb.append(", ")
@@ -112,23 +101,23 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
     }
   }
 
-  private case class Node(elem: A, wght: Int, lt: WBLH, rt: WBLH) extends WBLH
+  private case class Node(elem: A, lt: SkewHeap, rt: SkewHeap) extends SkewHeap
 
-  private case object Empty extends WBLH
+  private case object Empty extends SkewHeap
 
 }
 
-object WBLH {
-  def empty[A](implicit ord: Ordering[A]): WBLHFactory[A]#WBLH =
+object SkewHeap {
+  def empty[A](implicit ord: Ordering[A]): SkewHeapFactory[A]#SkewHeap =
     factory[A].empty
 
-  def apply[A]()(implicit ord: Ordering[A]): WBLHFactory[A]#WBLH =
+  def apply[A]()(implicit ord: Ordering[A]): SkewHeapFactory[A]#SkewHeap =
     factory[A].empty
 
-  def factory[A](implicit ord: Ordering[A]): WBLHFactory[A] =
-    new WBLHFactory[A]()
+  def factory[A](implicit ord: Ordering[A]): SkewHeapFactory[A] =
+    new SkewHeapFactory[A]()
 
-  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[WBLHFactory[A]#WBLH] {
+  implicit def arbitrary[A](implicit a: Arbitrary[A], ord: Ordering[A]) = Arbitrary[SkewHeapFactory[A]#SkewHeap] {
     for {xs <- Gen.listOf(a.arbitrary)}
       yield xs.foldRight(empty[A](ord))((x, bst) => bst.insert(x))
   }

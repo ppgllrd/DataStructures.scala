@@ -160,7 +160,7 @@ case class BSTFactory[A](implicit ord: Ordering[A]) extends SearchTreeFactory[A]
         case Empty =>
           sb.append("Empty")
         case Node(x, lt, rt) =>
-          sb.append("BSTNode(")
+          sb.append("Node(")
           sb.append(x)
           sb.append(", ")
           aux(lt)
