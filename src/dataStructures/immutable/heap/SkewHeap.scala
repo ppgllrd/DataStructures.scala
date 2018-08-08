@@ -17,7 +17,7 @@ case class SkewHeapFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFa
   override def singleton(elem: A): SkewHeap =
     Node(elem, Empty, Empty)
 
-  sealed trait SkewHeap extends MergeableHeap[A, SkewHeap] {
+  sealed trait SkewHeap extends MergeableHeap[SkewHeap, A] {
     override def isEmpty: Boolean = this match {
       case Empty =>
         true

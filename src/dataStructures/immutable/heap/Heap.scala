@@ -6,14 +6,15 @@
 
 package dataStructures.immutable.heap
 
-trait Heap[A] {
+trait Heap[This <: Heap[This, A], A] {
   def isEmpty: Boolean
 
   def size: Int
 
-  def insert(x: A): Heap[A]
+  def insert(x: A): This
 
   def minElem: A
 
-  def delMin: Heap[A]
+  def delMin: This
 }
+

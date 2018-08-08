@@ -7,7 +7,7 @@
 package dataStructures.immutable.heap
 
 trait MergeableHeapFactory[A] extends HeapFactory[A] {
-  override type Heap <: dataStructures.immutable.heap.MergeableHeap[A, Heap]
+  override type Heap <: dataStructures.immutable.heap.MergeableHeap[Heap, A]
 
   private def mergePairs(xs: List[Heap]): List[Heap] = xs match {
     case List() | List(_) =>
@@ -33,7 +33,7 @@ trait MergeableHeapFactory[A] extends HeapFactory[A] {
     var h = makeHeap(xs: _*)
     for (i <- 0 until xs.length) {
       xs(i) = h.minElem
-      h = h.delMin.asInstanceOf[Heap] // this could be fixed by making delMin return an object of same type as this
+      h = h.delMin
     }
   }
 }

@@ -28,7 +28,7 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
       Node(elem, weight, h2, h1)
   }
 
-  sealed trait WBLH extends MergeableHeap[A, WBLH] {
+  sealed trait WBLH extends MergeableHeap[WBLH, A] {
     def weight: Int = this match {
       case Empty =>
         0
