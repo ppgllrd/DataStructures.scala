@@ -8,7 +8,7 @@ package dataStructures.immutable.stack
 
 import org.scalacheck.{Arbitrary, Gen}
 
-sealed trait LinearStack[+A] extends Stack[A] {
+sealed trait LinearStack[+A] extends Stack[A] with StackLike[LinearStack, A] {
   override def isEmpty: Boolean = this match {
     case Empty =>
       true
@@ -49,6 +49,8 @@ private case object Empty extends LinearStack[Nothing]
 private case class Node[A](x: A, next: LinearStack[A]) extends LinearStack[A]
 
 case class LinearStackFactory[A]() extends StackFactory[A] {
+  override type Stack[A] = LinearStack[A]
+
   override def empty: LinearStack[A] =
     Empty
 }

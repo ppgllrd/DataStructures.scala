@@ -8,7 +8,7 @@ package dataStructures.immutable.stack
 
 import org.scalacheck.{Arbitrary, Gen}
 
-case class ListStack[+A] private(private val xs: List[A]) extends Stack[A] {
+case class ListStack[+A] private(private val xs: List[A]) extends Stack[A] with StackLike[ListStack, A] {
   def this() {
     this(List())
   }
@@ -36,6 +36,8 @@ case class ListStack[+A] private(private val xs: List[A]) extends Stack[A] {
 }
 
 case class ListStackFactory[A]() extends StackFactory[A] {
+  override type Stack[A] = ListStack[A]
+
   override def empty: ListStack[A] =
     new ListStack()
 }

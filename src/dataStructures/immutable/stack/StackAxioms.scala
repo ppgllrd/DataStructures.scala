@@ -13,20 +13,20 @@ import org.scalacheck.{Arbitrary, Properties}
 trait Test {
   type Elem // Base type
 
-  type Stack[A] <: dataStructures.immutable.stack.Stack[A] // Stack implementation
-
-  def empty: Stack[Elem] // Returns an empty stack
+  val factory: StackFactory[Elem]
 
   implicit val arbitraryElem: Arbitrary[Elem]
 
-  implicit val arbitraryStack: Arbitrary[Stack[Elem]]
+  implicit val arbitraryStack: Arbitrary[factory.Stack[Elem]]
 }
 
 class StackAxioms(test: Test) extends Properties("StackAxioms") {
 
   import test._
 
-  private type Stack[A] = test.Stack[A]
+  private type Stack[A] = test.factory.Stack[A]
+
+  private val empty = factory.empty
 
   property("isEmpty empty") =
     empty.isEmpty
@@ -47,9 +47,7 @@ class StackAxioms(test: Test) extends Properties("StackAxioms") {
 case class LinearStackTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
   override type Elem = A
 
-  override type Stack[A] = LinearStack[A]
-
-  override def empty = LinearStack()
+  override val factory = LinearStackFactory()
 
   implicit val arbitraryStack = LinearStack.arbitrary
 }
@@ -65,9 +63,7 @@ object TestLinearStackTestData extends StackAxioms(LinearStackTest[TestData.Type
 case class StackOnListTest[A](implicit val arbitraryElem: Arbitrary[A]) extends Test {
   override type Elem = A
 
-  override type Stack[A] = ListStack[A]
-
-  override def empty = ListStack()
+  override val factory = ListStackFactory()
 
   implicit val arbitraryStack = ListStack.arbitrary
 }

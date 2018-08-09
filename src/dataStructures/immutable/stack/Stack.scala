@@ -6,12 +6,14 @@
 
 package dataStructures.immutable.stack
 
-trait Stack[+A] {
+trait StackLike[+This[+ _], +A] {
   def isEmpty: Boolean
 
-  def push[B >: A](x: B): Stack[B]
+  def push[B >: A](x: B): This[B]
 
   def top: A
 
-  def pop: Stack[A]
+  def pop: This[A]
 }
+
+trait Stack[+A] extends StackLike[Stack, A]
