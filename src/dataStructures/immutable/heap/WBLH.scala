@@ -11,10 +11,10 @@ import org.scalacheck.{Arbitrary, Gen}
 case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactory[A] {
   override type Heap = WBLH
 
-  override def empty: WBLH =
+  override def empty: Heap =
     Empty
 
-  override def singleton(elem: A): WBLH =
+  override def singleton(elem: A): Heap =
     Node(elem, 1, Empty, Empty)
 
   // smart constructor: sets heaviest tree as left child
@@ -28,7 +28,7 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
       Node(elem, weight, h2, h1)
   }
 
-  sealed trait WBLH extends MergeableHeap[WBLH, A] {
+  sealed trait WBLH extends MergeableHeap[A] with MergeableHeapLike[WBLH, A] {
     def weight: Int = this match {
       case Empty =>
         0
@@ -53,7 +53,7 @@ case class WBLHFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactor
         x
     }
 
-    override def merge(that: WBLH): WBLH =
+    override def merge[That >: WBLH](that: That): That =
       (this, that) match {
         case (Empty, h2) =>
           h2

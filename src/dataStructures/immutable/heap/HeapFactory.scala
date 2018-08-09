@@ -7,7 +7,8 @@
 package dataStructures.immutable.heap
 
 trait HeapFactory[A] {
-  type Heap <: dataStructures.immutable.heap.Heap[Heap, A]
+  type Heap <: dataStructures.immutable.heap.Heap[A]
+    with dataStructures.immutable.heap.HeapLike[Heap, A]
 
   def empty: Heap
 

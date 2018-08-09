@@ -7,7 +7,8 @@
 package dataStructures.immutable.heap
 
 trait MergeableHeapFactory[A] extends HeapFactory[A] {
-  override type Heap <: dataStructures.immutable.heap.MergeableHeap[Heap, A]
+  override type Heap <: dataStructures.immutable.heap.MergeableHeap[A]
+    with dataStructures.immutable.heap.MergeableHeapLike[Heap, A]
 
   private def mergePairs(xs: List[Heap]): List[Heap] = xs match {
     case List() | List(_) =>

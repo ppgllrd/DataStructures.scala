@@ -6,7 +6,7 @@
 
 package dataStructures.immutable.heap
 
-trait Heap[This <: Heap[This, A], A] {
+trait HeapLike[+This, A] {
   def isEmpty: Boolean
 
   def size: Int
@@ -18,3 +18,4 @@ trait Heap[This <: Heap[This, A], A] {
   def delMin: This
 }
 
+trait Heap[A] extends HeapLike[Heap[A], A]

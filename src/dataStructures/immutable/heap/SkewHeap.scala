@@ -11,13 +11,13 @@ import org.scalacheck.{Arbitrary, Gen}
 case class SkewHeapFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFactory[A] {
   override type Heap = SkewHeap
 
-  override def empty: SkewHeap =
+  override def empty: Heap =
     Empty
 
-  override def singleton(elem: A): SkewHeap =
+  override def singleton(elem: A): Heap =
     Node(elem, Empty, Empty)
 
-  sealed trait SkewHeap extends MergeableHeap[SkewHeap, A] {
+  sealed trait SkewHeap extends MergeableHeap[A] with MergeableHeapLike[SkewHeap, A] {
     override def isEmpty: Boolean = this match {
       case Empty =>
         true
@@ -42,7 +42,7 @@ case class SkewHeapFactory[A](implicit ord: Ordering[A]) extends MergeableHeapFa
     /* Merge heaps along right spines enforcing heap order property.
      * Swap children for nodes in right spine of resulting heap.
      */
-    override def merge(that: SkewHeap): SkewHeap =
+    override def merge[That >: SkewHeap](that: That): That =
       (this, that) match {
         case (Empty, h2) =>
           h2

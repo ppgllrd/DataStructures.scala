@@ -6,11 +6,11 @@
 
 package demos.immutable.heap
 
-import dataStructures.immutable.heap.{SkewHeap, SkewHeapFactory, WBLH, WBLHFactory}
+import dataStructures.immutable.heap._
 
 object Demos extends App {
   val factory = WBLH.factory[Int]
-  var h1 = factory.empty
+  var h1: MergeableHeapLike[factory.WBLH, Int] = factory.empty
 
   h1 = h1.insert(5)
   h1 = h1.insert(7)
@@ -49,4 +49,10 @@ object Demos extends App {
 
   val h5 = SkewHeapFactory[Int].makeHeap(10, 4, 6, 3, 2)
   println(h5)
+
+  var h6: MergeableHeap[Int] = SkewHeap.empty
+  h6 = h6.insert(7)
+
+  var h7: Heap[Int] = SkewHeap.empty
+  h7 = h7.insert(7)
 }

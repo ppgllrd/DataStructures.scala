@@ -6,6 +6,8 @@
 
 package dataStructures.immutable.heap
 
-trait MergeableHeap[This <: MergeableHeap[This, A], A] extends Heap[This, A] {
-  def merge(that: This): This
+trait MergeableHeapLike[+This, A] extends HeapLike[This, A] {
+  def merge[That >: This](that: That): That
 }
+
+trait MergeableHeap[A] extends Heap[A] with MergeableHeapLike[MergeableHeap[A], A]
